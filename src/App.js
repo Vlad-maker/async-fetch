@@ -1,23 +1,57 @@
-import logo from './logo.svg';
-import './App.css';
+import { useState, useEffect } from "react";
+import "./App.css";
+
+const url = "https://www.boredapi.com/api/activity";
 
 function App() {
+  const [deal, setDeal] = useState(null);
+  const [nextDeal, setNextDeal] = useState();
+
+  const toggleDeal = () => {
+    setNextDeal(deal);
+  };
+
+  const getData = async () => {
+    try {
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const data = await response.json();
+      setDeal(data);
+      console.log(data);
+    } catch (error) {
+      console.error("ERROR:", error);
+    }
+  };
+
+  useEffect(() => {
+    getData();
+  }, [nextDeal]);
+
+  // useEffect(() => {
+  //   fetch(url)
+  //     .then((res) => res.json())
+  //     .then((data) => {
+  //       setDeal(data);
+  //       console.log(data);
+  //     })
+  //     .catch((err) => err);
+  // }, [nextDeal]);
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <div className="app__main-block">
+        <h4>Activity: {deal?.activity}</h4>
+        <p>Type: {deal?.type}</p>
+        <p>Participants: {deal?.participants}</p>
+        <p>Price: {deal?.price}</p>
+        {deal?.link === "" ? null : <p>Link: {deal?.link}</p>}
+
+        <button type="button" onClick={toggleDeal} className="btn">
+          next deal
+        </button>
+      </div>
     </div>
   );
 }
